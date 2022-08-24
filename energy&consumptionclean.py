@@ -87,7 +87,7 @@ df_energyco2 = pd.merge(dim_country, df_energyco2, on='Country', how='left')
 #Energy Co2
 columns_energyco2 = ['Country_Code', 'Energy_Type_Code', 'Year', 'Energy_Consumption', 'Energy_Intensity_Per_Capita',
                      'Energy_Intensity_By_Gdp', 'Co2_Emission']
-df_energyco2 = df_energyco2.loc[:, columns_energyco2]
+df_energy_co2 = df_energyco2.loc[:, columns_energyco2]
 
 #Energy share
 columns_energy_share = ['Country_Code', 'Year', 'Biofuel_Share_Elec', 'Coal_Share_Elec', 'Fossil_Share_Elec',
@@ -109,15 +109,20 @@ columns_energy_consumption = ['Country_Code', 'Year', 'Biofuel_Consumption', 'Co
                       'Other_Renewable_Consumption', 'Renewables_Consumption', 'Solar_Consumption', 'Wind_Consumption']
 df_energy_consumption = df_energy_consumption.loc[:, columns_energy_consumption]
 
+#Country info
+df_country_info = df_energyco2.loc[:, ['Country_Code', 'Year', 'Gdp', 'Population']]
+
 #Null values
 df_energyco2.fillna(np.nan, inplace=True)
 df_energy_share.fillna(np.nan, inplace=True)
 df_energy_generation.fillna(np.nan, inplace=True)
 df_energy_consumption.fillna(np.nan, inplace=True)
+df_country_info.fillna(np.nan, inplace=True)
 
 #Export csv
-df_energyco2.to_csv("energyco2.csv", index=False)
-dim_energy.to_csv("dim_energy.csv", index=False)
-df_energy_share.to_csv("energy_share.csv", index=False)
-df_energy_generation.to_csv("energy_generation.csv", index=False)
-df_energy_consumption.to_csv("energy_consumption.csv", index=False)
+# df_energy_co2.to_csv("energyco2.csv", index=False)
+# dim_energy.to_csv("dim_energy.csv", index=False)
+# df_energy_share.to_csv("energy_share.csv", index=False)
+# df_energy_generation.to_csv("energy_generation.csv", index=False)
+# df_energy_consumption.to_csv("energy_consumption.csv", index=False)
+# df_country_info.to_csv("country_info.csv", index=False)
