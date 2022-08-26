@@ -21,8 +21,8 @@ def upload_file(file_name, bucket, object_name=None):
     """
 
     #Credenciales
-    access_id = os.environ('ACCESS_ID')
-    secret_access_key = os.environ('SECRET_ACCESS_KEY')
+    access_id = os.environ.get('ACCESS_ID')
+    secret_access_key = os.environ.get('SECRET_ACCESS_KEY')
 
     if object_name is None:
         object_name = os.path.basename(file_name)
@@ -35,6 +35,9 @@ def upload_file(file_name, bucket, object_name=None):
         return False
     return True
 
-for archivo in os.listdir('Datasets'):
+for archivo in os.listdir('D:\\Documentos\\Henry\\ProyectoFinal\\Proyecto\\proyectoGrupal\\csv_export'):
     if '.csv' in archivo:
-        upload_file(archivo, '')
+        print(f'Cargando archivo: {archivo}')
+        archivo_dir = './csv_export/' + archivo
+        file_key = 'data/' + str(archivo) + '/' + str(archivo)
+        upload_file(archivo_dir, 'databasealejandro', file_key)
