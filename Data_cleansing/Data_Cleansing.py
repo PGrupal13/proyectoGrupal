@@ -65,6 +65,7 @@ def remote_file(url, file_name):
 cap_namecolumns(df_energy_consumption)
 cap_namecolumns(df_energyco2)
 cap_namecolumns(df_power_plant)
+dim_country.rename(columns={'Latitude (average)': 'Latitude', 'Longitude (average)': 'Longitude'}, inplace=True)
 df_power_plant.rename(columns={'Country': 'Country_Code', 'Country_Long': 'Country'}, inplace=True)
 #Remove blanks
 dim_country.loc[:, ['Country', 'Country_Code']] = dim_country.loc[:, ['Country', 'Country_Code']].applymap(lambda x: x.strip())
@@ -173,6 +174,7 @@ df_plant_info = df_power_plant.loc[:, ['Country_Code', 'Name', 'Capacity_Mw', 'L
 
 #Country info
 df_country_info = df_energyco2.loc[:, ['Country_Code', 'Year', 'Gdp', 'Population']]
+df_country_info.drop_duplicates(subset=['Country_Code', 'Year'], inplace=True)
 
 #Null values
 df_energyco2.fillna(np.nan, inplace=True)
@@ -200,7 +202,8 @@ index_nan = list(aux_info_pop[aux_info_pop['Population_Total'].isna()].index.val
 for i in index_nan:
     aux_info_pop.loc[i, 'Population_Total'] = aux_info_pop.loc[i, 'Population']
 
-df_country_info['Population']=aux_info_pop['Population_Total']
+df_country_info = aux_info_pop.loc[:,['Country_Code', 'Year', 'Population_Total', 'Gdp']]
+df_country_info.rename(columns={'Population_Total': 'Population'}, inplace=True)
 df_country_info.fillna(np.nan, inplace=True)
 
 #Export csv
