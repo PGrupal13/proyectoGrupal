@@ -1,0 +1,107 @@
+dim_country,
+Country,Nombre de país
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Latitude,Geolocalización en grados decimales
+Longitude,Geolocalización en grados decimales
+,
+country_info,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Year,Año de observación
+Gdp,Producto interno bruto
+Population,Población total
+,
+dim_energy,
+Energy_Type_Code,Identificador para cada tipo de energía
+Energy_Type,Tipo de energía
+,
+energyco2,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Energy_Type_Code,Identificador para cada tipo de energía
+Year,Año de observación
+Energy_Consumption,Consumo de energía (quad Btu)
+Energy_Intensity_Per_Capita,Ineficiencia energética(Millones Btu/persona)
+Energy_Intensity_By_Gdp,Ineficiencia energética(1000 Btu/GDP)
+Co2_Emission,Emisiones de CO2 (Millones toneladas)
+,
+energy_consumption,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Year,Año de observación
+Biofuel_Consumption,Consumo de energía primaria a partir de biocombustibles (TWh)
+Coal_Consumption,Consumo de energía primaria a partir del carbon (TWh)
+Fossil_Fuel_Consumption,"Consumo de energía primaria a partir del carbón, el petróleo y el gas (TWh)"
+Gas_Consumption,Consumo de energía primaria a partir de gas (TWh)
+Hydro_Consumption,Consumo de energía primaria que proviene de energía hidroeléctrica (TWh)
+Nuclear_Consumption,Consumo de energía primaria que proviene de energía nuclear (TWh)
+Low_Carbon_Consumption,Consumo de energía primaria de fuentes bajas en carbono (TWh)
+Oil_Consumption,Consumo de energía primaria a partir del petróleo (TWh)
+Other_Renewable_Consumption,Consumo de energía primaria a partir de otras energías renovables (TWh)
+Renewables_Consumption,Consumo de energía primaria a partir de fuentes renovables (TWh)
+Solar_Consumption,Consumo de energía primaria que proviene de energía solar (TWh)
+Wind_Consumption,Consumo de energía primaria que proviene de energía eólica (TWh)
+,
+energy_generation,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Year,Año de observación
+Biofuel_Electricity,Generación de electricidad a partir de biocombustibles (TWh)
+Coal_Electricity,Generación de electricidad a partir de carbon (TWh)
+Fossil_Electricity,"Generación de electricidad a partir del carbón, el petróleo y el gas (TWh)"
+Gas_Electricity,Generación de electricidad a partir de gas (TWh)
+Hydro_Electricity,Generación de electricidad a partir de energia hidroeléctrica (TWh)
+Nuclear_Electricity,Generación de electricidad a partir de energía nuclear  (TWh)
+Low_Carbon_Electricity,Generación de electricidad a partir de fuentes bajas en carbono(TWh)
+Oil_Electricity,Generación de electricidad a partir del petróleo (TWh)
+Other_Renewable_Electricity,Generación de electricidad a partir de otras energías renovables incluyendo biocombustibles (TWh)
+Renewables_Electricity,Generación de electricidad a partir de fuentes renovables (TWh)
+Solar_Electricity,Generación de electricidad a partir de energía solar (TWh)
+Wind_Electricity,Generación de electricidad a partir de energía eólica (TWh)
+,
+energy_share,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Year,Año de observación
+Biofuel_Share_Elec,Porcentaje de generación de electricidad que proviene de biocombustibles
+Coal_Share_Elec,Porcentaje de generación de electricidad que proviene del carbon
+Fossil_Share_Elec,"Porcentaje de generación de electricidad que proviene del carbón, el petróleo y el gas"
+Gas_Share_Elec,Porcentaje de generación de electricidad que proviene de gas
+Hydro_Share_Elec,Porcentaje de generación de electricidad que proviene de energia hidroeléctrica
+Low_Carbon_Share_Elec,Porcentaje de generación de electricidad que proviene de fuentes bajas en carbono
+Nuclear_Share_Elec,Porcentaje de generación de electricidad que proviene de energía nuclear 
+Oil_Share_Elec,Porcentaje de generación de electricidad que proviene del petróleo
+Other_Renewables_Share_Elec,Porcentaje de generación de electricidad que proviene de otras energías renovables incluyendo biocombustibles
+Renewables_Share_Elec,Porcentaje de generación de electricidad que proviene de fuentes renovables
+Solar_Share_Elec,Porcentaje de generación de electricidad que proviene de energía solar
+Wind_Share_Elec,Porcentaje de generación de electricidad que proviene de energía eólica
+Greenhouse_Gas_Emissions,Emisiones de gases de efecto invernadero producidas en la generación de electricidad (millones de toneladas)
+,
+dim_fuel,
+Fuel_Code,Identificador para cada tipo de combustible
+Fuel,Tipo de combustible
+,
+plant_generation,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Name,Nombre de la planta de energía
+Fuel_Code,Identificador para cada tipo de combustible
+Generation_Gwh_2013,Generación eléctrica reportada para el año 2013 (GWh)
+Generation_Gwh_2014,Generación eléctrica reportada para el año 2014 (GWh)
+Generation_Gwh_2015,Generación eléctrica reportada para el año 2015 (GWh)
+Generation_Gwh_2016,Generación eléctrica reportada para el año 2016 (GWh)
+Generation_Gwh_2017,Generación eléctrica reportada para el año 2017 (GWh)
+Estimated_Generation_Gwh_2013,Generación eléctrica estimada para el año 2013 (GWh)
+Estimated_Generation_Gwh_2014,Generación eléctrica estimada para el año 2014 (GWh)
+Estimated_Generation_Gwh_2015,Generación eléctrica estimada para el año 2015 (GWh)
+Estimated_Generation_Gwh_2016,Generación eléctrica estimada para el año 2016 (GWh)
+Estimated_Generation_Gwh_2017,Generación eléctrica estimada para el año 2017 (GWh)
+Estimated_Generation_Note_2013,Método utilizado para estimar la generación eléctrica para el año 2013
+Estimated_Generation_Note_2014,Método utilizado para estimar la generación eléctrica para el año 2014
+Estimated_Generation_Note_2015,Método utilizado para estimar la generación eléctrica para el año 2015
+Estimated_Generation_Note_2016,Método utilizado para estimar la generación eléctrica para el año 2016
+Estimated_Generation_Note_2017,Método utilizado para estimar la generación eléctrica para el año 2017
+,
+plant_info,
+Country_Code,Código de país de 3 caracteres correspondiente a la especificación alfa-3
+Name,Nombre de la planta de energía
+Capacity_Mw,Capacidad de generación eléctrica (MWh)
+Latitude,Geolocalización en grados decimales
+Longitude,Geolocalización en grados decimales
+,
+dim_calendar_year,
+Year,Año de observación
