@@ -70,16 +70,35 @@ df_power_plant.rename(columns={'Country': 'Country_Code', 'Country_Long': 'Count
 #Remove blanks
 dim_country.loc[:, ['Country', 'Country_Code']] = dim_country.loc[:, ['Country', 'Country_Code']].applymap(lambda x: x.strip())
 df_power_plant['Country_Code'] = df_power_plant['Country_Code'].apply(lambda x: x.strip())
+#-----------------------------------------------------
+#Add teritories
+territories = ['The Union of Soviet Socialist Republics', 'Serbia and Montenegro', 'Yugoslavia', 'Czechoslovakia']
+codes = ['SUN', 'SCG', 'YUG', 'CSK']
+latitud = [61.52401, 44.6583, 44.818996724, 50.073658]
+longitud = [105.318756, 20.6844, 20.457331504, 14.418540]
+for i in range(4):
+    row = dim_country.shape[0]
+    dim_country.loc[row, 'Country']= territories[i]
+    dim_country.loc[row, 'Country_Code']= codes[i]
+    dim_country.loc[row, 'Latitude']= latitud[i]
+    dim_country.loc[row, 'Longitude']= longitud[i]
+dim_country.sort_values('Country', inplace=True)
+dim_country.reset_index(inplace=True, drop=True)
+#-------------------------------------------------------
 
 #Rename countries
 #df_energyco2
+
+
+
 l1 = ['The Bahamas', 'British Virgin Islands', 'Cabo Verde', 'Congo-Brazzaville',
       'Congo-Kinshasa', 'Côte d’Ivoire', 'Falkland Islands', 'Gambia,T he', 
       'Iran', 'North Korea', 'Laos', 
       'Macau', 'Moldova', 'Micronesia', 'Palestinian Territories', 
       'Reunion', 'Saint Helena', 'Saint Vincent/Grenadines', 
       'Eswatini', 'Syria', 'Tanzania', 'U.S. Virgin Islands', 
-      'North Macedonia']
+      'North Macedonia', 'Former Czechoslovakia', 'Former Serbia and Montenegro', 
+      'Former U.S.S.R.', 'Former Yugoslavia']
 
 l2 = ['Bahamas', 'Virgin Islands, British', 'Cape Verde', 'Congo', 
       'Congo, the Democratic Republic of the', "Cote d'Ivoire", 'Falkland Islands (Malvinas)', 'Gambia', 
@@ -87,7 +106,8 @@ l2 = ['Bahamas', 'Virgin Islands, British', 'Cape Verde', 'Congo',
       'Macao', 'Moldova, Republic of', 'Micronesia, Federated States of', 'Palestinian Territory, Occupied', 
       'Réunion', 'Saint Helena,  Ascension and Tristan da Cunha', 'Saint Vincent and the Grenadines', 
       'Swaziland', 'Syrian Arab Republic', 'Tanzania, United Republic of', 'Virgin Islands, U.S.', 
-      'Macedonia, Republic of North']
+      'Macedonia, Republic of North', 'Czechoslovakia', 'Serbia and Montenegro', 
+      'The Union of Soviet Socialist Republics', 'Yugoslavia']
 
 rename_country(df_energyco2, l1, l2)
 
@@ -97,14 +117,15 @@ l3 = ['Czechia', 'Democratic Republic of Congo', 'Falkland Islands',
       'Laos', 'North Macedonia', 'Micronesia (country)', 
       'Moldova', 'Palestine', 'Reunion', 'Eswatini',
       'Syria', 'Tanzania', 'Timor', 'United States Virgin Islands',
-      'British Virgin Islands', 'Saint Helena']
+      'British Virgin Islands', 'Saint Helena', 'USSR']
     
 l4 = ['Czech Republic', 'Congo, the Democratic Republic of the', 'Falkland Islands (Malvinas)',
       'Faroe Islands', 'Iran, Islamic Republic of',  "Korea, Democratic People's Republic of",
       "Lao People's Democratic Republic", 'Macedonia, Republic of North', 'Micronesia, Federated States of', 
       'Moldova,  Republic of', 'Palestinian Territory, Occupied', 'Réunion', 'Swaziland', 
       'Syrian Arab Republic', 'Tanzania, United Republic of', 'Timor-Leste', 'Virgin Islands, U.S.',
-      'Virgin Islands, British', 'Saint Helena, Ascension and Tristan da Cunha']
+      'Virgin Islands, British', 'Saint Helena, Ascension and Tristan da Cunha', 
+      'The Union of Soviet Socialist Republics']
 
 rename_country(df_energy_consumption, l3, l4)
 
@@ -205,6 +226,11 @@ for i in index_nan:
 df_country_info = aux_info_pop.loc[:,['Country_Code', 'Year', 'Population_Total', 'Gdp']]
 df_country_info.rename(columns={'Population_Total': 'Population'}, inplace=True)
 df_country_info.fillna(np.nan, inplace=True)
+#-----------------------------------------------------
+#Energy without all types
+df_energy_co2 = df_energy_co2[df_energy_co2['Energy_Type_Code'] > 0]
+dim_energy = dim_energy[dim_energy['Energy_Type_Code'] > 0]
+#-----------------------------------------------------
 
 #Export csv
 dim_country.to_csv("csv_export/dim_country.csv", index=False)
