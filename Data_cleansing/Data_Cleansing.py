@@ -169,7 +169,7 @@ columns_energy_share = ['Country_Code', 'Year', 'Biofuel_Share_Elec', 'Coal_Shar
 df_energy_share = df_energy_consumption.loc[:, columns_energy_share]
 
 #Energy generation
-columns_energy_generation = ['Country_Code', 'Year', 'Biofuel_Electricity', 'Coal_Electricity', 'Fossil_Electricity',
+columns_energy_generation = ['Country_Code','gppd_idnr','Year', 'Biofuel_Electricity', 'Coal_Electricity', 'Fossil_Electricity',
                      'Gas_Electricity', 'Hydro_Electricity', 'Nuclear_Electricity', 'Low_Carbon_Electricity',
                      'Oil_Electricity', 'Other_Renewable_Electricity', 'Renewables_Electricity', 'Solar_Electricity',
                      'Wind_Electricity']
@@ -182,7 +182,7 @@ columns_energy_consumption = ['Country_Code', 'Year', 'Biofuel_Consumption', 'Co
 df_energy_consum = df_energy_consumption.loc[:, columns_energy_consumption]
 
 #Plant generation
-columns_plant_generation = ['Country_Code', 'Name', 'Fuel_Code', 'Generation_Gwh_2013','Generation_Gwh_2014', 
+columns_plant_generation = ['Country_Code', 'Name', 'gppd_idnr','Fuel_Code', 'Generation_Gwh_2013','Generation_Gwh_2014', 
                            'Generation_Gwh_2015', 'Generation_Gwh_2016', 'Generation_Gwh_2017', 
                            'Estimated_Generation_Gwh_2013', 'Estimated_Generation_Gwh_2014', 'Estimated_Generation_Gwh_2015',
                            'Estimated_Generation_Gwh_2016', 'Estimated_Generation_Gwh_2017','Estimated_Generation_Note_2013', 
