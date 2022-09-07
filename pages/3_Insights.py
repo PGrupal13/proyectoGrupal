@@ -324,7 +324,7 @@ elif choose == 'Predict the CO2 emission of any country using the share percenta
 
         y = data[['co2_emission']]
 
-        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, random_state=42)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.3, train_size=0.7, random_state=42)
         reg = GradientBoostingRegressor(random_state=42)
         reg.fit(x_train, np.ravel(y_train, ))
         train_pred = reg.predict(x_train)
@@ -361,6 +361,7 @@ elif choose == 'Predict the CO2 emission of any country using the share percenta
                     delta_color='inverse')
 
 elif choose == 'Forecasting consumption and emission':
+    st.header('Forecasting consumption and emission')
     query01='''
     select * from  main_db.typesplit2
     where year > 1990 ;
@@ -397,7 +398,7 @@ elif choose == 'Forecasting consumption and emission':
 
     list_country= df_country.country.unique()
 
-    country= st.selectbox('choice country', list_country)
+    country= st.selectbox('Select a country', list_country)
 
     df = df_country.loc[df_country.country == country].reset_index(drop=True)
         
