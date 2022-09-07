@@ -220,7 +220,6 @@ elif choose == 'Predict the CO2 emission of any country using the share percenta
         'Select a country',
         pais_lst
     )
-
     col1, col2 = st.columns(2)
 
     with col1:
@@ -311,7 +310,7 @@ elif choose == 'Predict the CO2 emission of any country using the share percenta
             co2_pred: prediction of CO2 emitted
         """
         
-        data = data_merged[data_merged.country_code == country]
+        data = data_merged[data_merged.country == country]
         features_prediction = np.array([biofuel_share_elec, coal_share_elec,
         gas_share_elec, hydro_share_elec,
         nuclear_share_elec, oil_share_elec,
