@@ -7,3 +7,4 @@ sodapy
 requests
 streamlit==1.12.2
 streamlit-option-menu
+sklearn
