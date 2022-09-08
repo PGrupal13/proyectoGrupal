@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import plotly.express as px
+import plotly.graph_objects as go
+from get_df_co2aprox import *
 from apiathena import apirequest
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
@@ -19,7 +21,7 @@ with st.sidebar:
     choose = option_menu("Insights & Predictions", ['France Vs Germany Nuclear Energy',
                                   'Countries Clusters by relationship between GDP and CO2 Emission',
                                   'Predict the CO2 emission of any country using the share percentage of energy production',
-                                  'Forecasting consumption and emission'])
+                                  'Forecasting consumption and emission', 'CO2 emissions (approximation)'])
 
 
 if choose == 'France Vs Germany Nuclear Energy':
@@ -447,3 +449,47 @@ elif choose == 'Forecasting consumption and emission':
     ax.legend(loc='lower left',prop={'size': 12});
     ax2.legend(loc='upper left', prop={'size': 12})
     st.pyplot(fig)
+
+elif choose == 'CO2 emissions (approximation)':
+    st.write('# CO2 emissions (approximation)')
+    st.write('''
+            The following prediction, models four indicators: human population, GDP per capita, energy intensity (per unit of GDP), and carbon intensity (emissions per unit of energy consumed) and approximates CO2 emissions by country based on these factors. 
+            Only countries with less than 50% of missing values are presented. 
+            ''')
+    country2 = pd.DataFrame(country1)
+    country2.rename(columns={0:'Country_Code'}, inplace=True)
+    country2 = pd.merge(country2, dim_country, on='Country_Code', how='left')
+    country_name = tuple(country2['Country'].values)
+    years = []
+    for i in range(2023, 2031):
+        years.append(str(i))
+
+    col1_1, col1_2, col1_3 = st.columns([1,1,2])
+    with col1_1:
+        c = st.selectbox('Choose country', country_name)
+    with col1_2:
+        y = st.selectbox('Choose year', years)
+
+    col2_1, col2_2 = st.columns(2)
+    cn = country2[country2['Country'] == c].index.values[0]
+    c_code = country2.loc[cn, 'Country_Code']
+
+    df_c = df_country(c_code)
+    predict(c_code, 2030)
+    idx = list(pred[pred['pred_co2']<0].index.values)
+    pred.loc[idx, 'pred_co2'] = 0
+
+    col2_1.write('##### Graph prediction(factors of environmental impact)')
+    col2_1.write(plot_pred(df_c, coeficientes))
+    col2_2.write(f'##### Prediction for the year {y}')
+    index = pred[pred['Year'] == int(y)].index.values[0]
+    co2 = pred.loc[index,'pred_co2']
+    col2_2.write(f'CO2 emissions: {round(co2, 2)} millions of tons')
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x = np.arange(1980, 2031), y=df_c['Co2_Emission'], mode='markers', marker=dict(color='#004600'), name='CO2 emission'))
+    fig.add_trace(go.Scatter(x = np.arange(2020, int(y)+1), y=pred['pred_co2'], mode='markers', marker=dict(color='#707070'), name='CO2 prediction'))
+    fig.update_layout(title='CO2 emission',
+    xaxis=dict(title='Year', gridcolor='#E2E2E2', griddash='dash', ticks='outside', tickcolor='#000000'),
+    yaxis=dict(title='CO2 emission(millions of tons)', gridcolor='#E2E2E2',griddash='dash', ticks='outside', tickcolor='#000000'), plot_bgcolor='rgba(0,0,0,0)')
+    col2_2.write(fig)
