@@ -574,7 +574,6 @@ elif choose == 'CO2 prediction with Neural Network':
     st.write('Value predicted CO2, (millons of tons)',predicciones_final)
 
 elif choose == 'CO2 emissions (approximation)':
-    from get_df_co2aprox import *
     st.write('# CO2 emissions (approximation)')
     st.write('''
             The following prediction, models four indicators: human population, GDP per capita, energy intensity (per unit of GDP), and carbon intensity (emissions per unit of energy consumed) and approximates CO2 emissions by country based on these factors. 

@@ -5,6 +5,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import PolynomialFeatures
+import streamlit as st
+
+@st.experimental_memo(ttl=86400)
+def request(query):
+    return apirequest(query)
 
 #Auxiliar functions
 def capword(list_values, sep = '_'):
@@ -35,9 +40,9 @@ q1 = 'SELECT * FROM main_db.country_info'
 q2 = 'SELECT * FROM main_db.dim_country'
 q3 = 'SELECT * FROM main_db.energyco2_all'
 
-country_info = apirequest(q1)
-dim_country = apirequest(q2)
-energyco2 = apirequest(q3)
+country_info = request(q1)
+dim_country = request(q2)
+energyco2 = request(q3)
 cap_namecolumns(country_info)
 cap_namecolumns(dim_country)
 cap_namecolumns(energyco2)
