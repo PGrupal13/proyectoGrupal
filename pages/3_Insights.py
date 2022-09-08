@@ -5,6 +5,10 @@ import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import plotly.express as px
 import plotly.graph_objects as go
+<<<<<<< HEAD
+=======
+from get_df_co2aprox import *
+>>>>>>> c199181a92420899b33bae0ffc1b167b7490e49a
 from apiathena import apirequest
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
@@ -25,10 +29,15 @@ def request(query):
 with st.sidebar:
     choose = option_menu("Insights & Predictions", ['France Vs Germany Nuclear Energy',
                                   'Countries Clusters by relationship between GDP and CO2 Emission',
+<<<<<<< HEAD
                                   'Predict the CO2 emission using the share percentage of energy production',
                                   'Forecasting consumption and emission',
                                   'CO2 prediction with Neural Network',
                                   'CO2 emissions (approximation)'])
+=======
+                                  'Predict the CO2 emission of any country using the share percentage of energy production',
+                                  'Forecasting consumption and emission', 'CO2 emissions (approximation)'])
+>>>>>>> c199181a92420899b33bae0ffc1b167b7490e49a
 
 
 if choose == 'France Vs Germany Nuclear Energy':
@@ -520,6 +529,7 @@ elif choose == 'CO2 prediction with Neural Network':
     query =''' select * 
                from  "main_db.energyco2_origin;'''
 
+<<<<<<< HEAD
     #df_co2_completo = request(query)
 
     #try:
@@ -574,6 +584,13 @@ elif choose == 'CO2 prediction with Neural Network':
 
 elif choose == 'CO2 emissions (approximation)':
     from get_df_co2aprox import *
+=======
+    ax.legend(loc='lower left',prop={'size': 12});
+    ax2.legend(loc='upper left', prop={'size': 12})
+    st.pyplot(fig)
+
+elif choose == 'CO2 emissions (approximation)':
+>>>>>>> c199181a92420899b33bae0ffc1b167b7490e49a
     st.write('# CO2 emissions (approximation)')
     st.write('''
             The following prediction, models four indicators: human population, GDP per capita, energy intensity (per unit of GDP), and carbon intensity (emissions per unit of energy consumed) and approximates CO2 emissions by country based on these factors. 
@@ -589,9 +606,15 @@ elif choose == 'CO2 emissions (approximation)':
 
     col1_1, col1_2, col1_3 = st.columns([1,1,2])
     with col1_1:
+<<<<<<< HEAD
         c = st.selectbox('Select country', country_name)
     with col1_2:
         y = st.selectbox('Select year', years)
+=======
+        c = st.selectbox('Choose country', country_name)
+    with col1_2:
+        y = st.selectbox('Choose year', years)
+>>>>>>> c199181a92420899b33bae0ffc1b167b7490e49a
 
     col2_1, col2_2 = st.columns(2)
     cn = country2[country2['Country'] == c].index.values[0]

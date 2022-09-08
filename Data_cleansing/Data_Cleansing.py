@@ -169,7 +169,7 @@ columns_energy_share = ['Country_Code', 'Year', 'Biofuel_Share_Elec', 'Coal_Shar
 df_energy_share = df_energy_consumption.loc[:, columns_energy_share]
 
 #Energy generation
-columns_energy_generation = ['Country_Code','gppd_idnr','Year', 'Biofuel_Electricity', 'Coal_Electricity', 'Fossil_Electricity',
+columns_energy_generation = ['Country_Code', 'Year', 'Biofuel_Electricity', 'Coal_Electricity', 'Fossil_Electricity',
                      'Gas_Electricity', 'Hydro_Electricity', 'Nuclear_Electricity', 'Low_Carbon_Electricity',
                      'Oil_Electricity', 'Other_Renewable_Electricity', 'Renewables_Electricity', 'Solar_Electricity',
                      'Wind_Electricity']
@@ -182,7 +182,7 @@ columns_energy_consumption = ['Country_Code', 'Year', 'Biofuel_Consumption', 'Co
 df_energy_consum = df_energy_consumption.loc[:, columns_energy_consumption]
 
 #Plant generation
-columns_plant_generation = ['Country_Code', 'Name', 'gppd_idnr','Fuel_Code', 'Generation_Gwh_2013','Generation_Gwh_2014', 
+columns_plant_generation = ['Country_Code', 'Name', 'Fuel_Code', 'Generation_Gwh_2013','Generation_Gwh_2014', 
                            'Generation_Gwh_2015', 'Generation_Gwh_2016', 'Generation_Gwh_2017', 
                            'Estimated_Generation_Gwh_2013', 'Estimated_Generation_Gwh_2014', 'Estimated_Generation_Gwh_2015',
                            'Estimated_Generation_Gwh_2016', 'Estimated_Generation_Gwh_2017','Estimated_Generation_Note_2013', 
@@ -204,8 +204,7 @@ df_energy_generation.fillna(np.nan, inplace=True)
 df_energy_consumption.fillna(np.nan, inplace=True)
 #Country info
 #get remote csv 
-df_pop = remote_file('https://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=csv', 
-                     'API_SP.POP.TOTL_DS2_en_csv_v2_4413579.csv')
+df_pop = remote_file('https://api.worldbank.org/v2/en/indicator/SP.POP.TOTL?downloadformat=csv', 'API_SP.POP.TOTL_DS2_en_csv_v2_4481439.csv')
 df_pop.rename(columns={'Country Code': 'Country_Code'}, inplace=True)
 #years
 years = list(df_country_info['Year'].unique())
@@ -228,14 +227,16 @@ df_country_info.rename(columns={'Population_Total': 'Population'}, inplace=True)
 df_country_info.fillna(np.nan, inplace=True)
 #-----------------------------------------------------
 #Energy without all types
-df_energy_co2 = df_energy_co2[df_energy_co2['Energy_Type_Code'] > 0]
-dim_energy = dim_energy[dim_energy['Energy_Type_Code'] > 0]
+df_energy_co21 = df_energy_co2[df_energy_co2['Energy_Type_Code'] > 0]
+dim_energy1 = dim_energy[dim_energy['Energy_Type_Code'] > 0]
 #-----------------------------------------------------
 
 #Export csv
 dim_country.to_csv("csv_export/dim_country.csv", index=False)
-df_energy_co2.to_csv("csv_export/energyco2.csv", index=False)
-dim_energy.to_csv("csv_export/dim_energy.csv", index=False)
+df_energy_co21.to_csv("csv_export/energyco2.csv", index=False)
+df_energy_co2.to_csv("csv_export/energyco2_all.csv", index=False)
+dim_energy1.to_csv("csv_export/dim_energy.csv", index=False)
+dim_energy.to_csv("csv_export/dim_energy_all.csv", index=False)
 df_energy_share.to_csv("csv_export/energy_share.csv", index=False)
 df_energy_generation.to_csv("csv_export/energy_generation.csv", index=False)
 df_energy_consum.to_csv("csv_export/energy_consumption.csv", index=False)
