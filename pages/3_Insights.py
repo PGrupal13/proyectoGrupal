@@ -4,12 +4,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 import plotly.express as px
+import plotly.graph_objects as go
 from apiathena import apirequest
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from streamlit_option_menu import option_menu
+import streamlit.components as stc
+import base64 
+import time
+import joblib
+from asyncore import write
+
 
 @st.experimental_memo(ttl=86400)
 def request(query):
@@ -18,8 +25,10 @@ def request(query):
 with st.sidebar:
     choose = option_menu("Insights & Predictions", ['France Vs Germany Nuclear Energy',
                                   'Countries Clusters by relationship between GDP and CO2 Emission',
-                                  'Predict the CO2 emission of any country using the share percentage of energy production',
-                                  'Forecasting consumption and emission'])
+                                  'Predict the CO2 emission using the share percentage of energy production',
+                                  'Forecasting consumption and emission',
+                                  'CO2 prediction with Neural Network',
+                                  'CO2 emissions (approximation)'])
 
 
 if choose == 'France Vs Germany Nuclear Energy':
@@ -182,7 +191,7 @@ elif choose == 'Countries Clusters by relationship between GDP and CO2 Emission'
         emmited by India.
         """)
 
-elif choose == 'Predict the CO2 emission of any country using the share percentage of energy production':
+elif choose == 'Predict the CO2 emission using the share percentage of energy production':
     st.header('Predict the CO2 emission of any country using the share percentage of energy production')
     
 
@@ -360,7 +369,33 @@ elif choose == 'Predict the CO2 emission of any country using the share percenta
                     delta_color='inverse')
 
 elif choose == 'Forecasting consumption and emission':
-    st.header('Forecasting consumption and emission')
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    def csv_downloader(data):
+        csvfile = data.to_csv()
+        b64 = base64.b64encode(csvfile.encode()).decode()
+        new_filename = "new_text_file_{}_.csv".format(timestr)
+        st.markdown("#### Download  CSV ###")
+        href = f'<a href="data:file/csv;base64,{b64}" download="{new_filename}">download</a>'
+        st.markdown(href,unsafe_allow_html=True)
+
+    class FileDownloader(object):
+        """docstring for FileDownloader
+        >>> download = FileDownloader(data,filename,file_ext).download()
+
+        """
+        def __init__(self, data,filename='dataset',file_ext='txt'):
+            super(FileDownloader, self).__init__()
+            self.data = data
+            self.filename = filename
+            self.file_ext = file_ext
+
+        def download(self):
+            b64 = base64.b64encode(self.data.encode()).decode()
+            new_filename = "{}_{}_.{}".format(self.filename,timestr,self.file_ext)
+            st.markdown("#### Download CSV ###")
+            href = f'<a href="data:file/{self.file_ext};base64,{b64}" download="{new_filename}">download</a>'
+            st.markdown(href,unsafe_allow_html=True)
+
     query01='''
     select * from  main_db.typesplit2
     where year > 1990 ;
@@ -393,57 +428,191 @@ elif choose == 'Forecasting consumption and emission':
     df_country= df_gen.groupby(['year', 'country_code']).sum().reset_index()
     df_country = pd.merge(df_country, df_country_dim, on= ['country_code'])
 
-    country_name='Brasil'
-
     list_country= df_country.country.unique()
 
-    country= st.selectbox('Select a country', list_country)
+    color_map = ["#342E37", "#928779", "#34495e", "#DD403A", "#A2D729"]
 
-    df = df_country.loc[df_country.country == country].reset_index(drop=True)
+    def makegraph(country):
+        df = df_country.loc[df_country.country == country].reset_index(drop=True)
+            
+        df= df.drop(['country_code'], axis=1)
         
-    df= df.drop(['country_code'], axis=1)
-
-    X = df.iloc[:,0].values.reshape(-1,1)
-    df_pron= pd.DataFrame()
-    df_pron[['year']] = rango
-
-    for i in range(1, 9):
-
-        y = df.iloc[:, i]
-        regr= LinearRegression()
-        regr.fit(X, y)
-        y_pred = regr.predict(X)
-        y_prediction= regr.predict(rango)
-        df_pron[[i]] = y_prediction.reshape(-1,1)
-
-    df_pron.rename(columns={1:'population', 2:'gdp', 3: '1', 4:'2', 5:'3', 6:'4', 7:'5', 
-                            8:'total_emission'}, inplace=True )
+        X = df.iloc[:,0].values.reshape(-1,1)
+        df_pron= pd.DataFrame()
+        df_pron[['year']] = rango
         
-    df_pron = pd.concat([df, df_pron], axis=0)    
+        
+        
+        for i in range(1, 9):
+        
+            y = df.iloc[:, i]
+            regr= LinearRegression()
+            regr.fit(X, y)
+            y_pred = regr.predict(X)
+            y_prediction= regr.predict(rango)
+            df_pron[[i]] = y_prediction.reshape(-1,1)
+        
+        df_pron.rename(columns={1:'population', 2:'gdp', 3: '1', 4:'2', 5:'3', 6:'4', 7:'5', 
+                                8:'total_emission'}, inplace=True )
+            
+        df_pron = pd.concat([df, df_pron], axis=0)    
+        
+        y1=df_pron['1']
+        y2=df_pron['2']
+        y3=df_pron['3']
+        y4=df_pron['4']
+        y5=df_pron['5']
+        
+        
+        fig, ax = plt.subplots(figsize= (12, 6), dpi=120)
+        
+        ax.set_xlabel('year',   fontsize=16)
+        ax.set_ylabel(' consuption in quad btu', fontsize=16)
+        ax.set_title('Forecast emission & energy consumption by type, country: '+ country , fontsize=18)
+        
+        ax.stackplot(df_pron.year,  y1 , y2, y4, y3, y5, labels=['coal ','natural gas', 'petroleum and other liquids',
+                    'nuclear', 'renewables and others'], colors=color_map )
+        
+        ax2 = ax.twinx()
+        ax2.axvline(x=2020, color='blue', label='Forecast 2020-2030')
+        ax2.axvline(x=2005, color='brown', ls='--', label='Kioto protocol')
+        ax2.axvline(x=2016, color='brown', ls='-.', label='Paris agreement')
+        
+        
+        ax2.plot(df_pron.year, df_pron.total_emission,'--', linewidth=2, color='black',label='total emission co2' )
+        ax2.set_ylabel('co2 emission in megaton', fontsize=16)
+        
+        ax2.set_ylim(0)
+        ax.grid(True)
+        
+        ax.legend(loc='lower left',prop={'size': 12}, bbox_to_anchor=(1.1, 0.5));
+        ax2.legend(loc='upper left', prop={'size': 12}, bbox_to_anchor=(1.1, 0.5))
+        return fig
 
-    y1=df_pron['1']
-    y2=df_pron['2']
-    y3=df_pron['3']
-    y4=df_pron['4']
-    y5=df_pron['5']
+    st.title('Forecasting energy consumption and CO2 emission ')
+    st.subheader('simple linear regression model ')
 
+    country= st.multiselect('Select countries', list_country, default=['Argentina'])   #####  menu STREAMLIT
+    for i in range(len(country)):
+        item = country[i]   
+        st.write(makegraph(item))
+        
+    df_country.rename(columns= {'1': 'coal', '2':'natural gas', '3': 'nuclear', '4':'petroleum other liquids',
+                                '5': 'renewables and others'}, inplace=True)   
 
-    fig, ax = plt.subplots(figsize= (12, 6), dpi=120)
+    download = FileDownloader(df_country.to_csv(),file_ext='csv').download()
 
-    ax.set_xlabel('year',   fontsize=16)
-    ax.set_ylabel(' consuption in quad btu', fontsize=16)
-    ax.set_title('Forecast emission & energy consumption by type, country: '+ country , fontsize=18)
+elif choose == 'CO2 prediction with Neural Network':
+    st.header('CO2 prediction with Neural Network')
+    
+    
+    @st.experimental_memo(ttl=86400)
+    def request(query):
+        return apirequest(query)
 
-    ax.stackplot(df_pron.year,  y1 , y2, y4, y3, y5, labels=['coal ','natural gas', 'petroleum and other liquids',
-                'nuclear', 'renewables and others'])
-    ax.axvline(x=2019, color='black', label='Forecast 2020-2030')
-    ax2 = ax.twinx()
-    ax2.plot(df_pron.year, df_pron.total_emission,'--', linewidth=2, color='black',label='total emission co2' )
-    ax2.set_ylabel('co2 emission in megaton', fontsize=16)
+    #Se carga el modelo entrenado
+    @st.experimental_memo()
+    def modelo_nn():
+        return joblib.load('./modelo_entrenado.pkl')
 
-    ax2.set_ylim(0)
-    ax.grid(True)
+    modelo_final = modelo_nn()
+    #Query desde AWS
+    query =''' select * 
+               from  "main_db.energyco2_origin;'''
 
-    ax.legend(loc='lower left',prop={'size': 12});
-    ax2.legend(loc='upper left', prop={'size': 12})
-    st.pyplot(fig)
+    #df_co2_completo = request(query)
+
+    #try:
+    #    df_co2_completo = request(query) #me da error 502 (bad gateway)
+    #except UnboundLocalError as e:
+        #solucion para la prueba ingestando desde el dataset
+    df_co2_completo = pd.read_csv('./Datasets/energyco2.csv')
+
+    #Se filtran el tipo de energía 'all energy types' y el pais 'world'
+    mask_AET = df_co2_completo['Energy_type']!='all_energy_types'
+    df_co2_AET = df_co2_completo[mask_AET]
+    mask_world = df_co2_AET['Country'] != 'World'
+    df_co2_final = df_co2_AET[mask_world].copy()
+
+    #este feature se puede eliminar, pero yo le agarré cariño para las pruebas
+    df_co2_final.rename(columns={"Unnamed: 0": 'Index'},inplace=True)
+
+    #aquí year_sel y user_sel vienen de una lista desplegable
+    country_list = df_co2_final['Country'].unique()
+    #st.write(country_list)
+    year_list = df_co2_final['Year'].unique()
+    year_sel = st.selectbox(label='Select a Year', options=year_list)
+    Country_sel = st.selectbox(label='Select a Country', options=country_list)
+    user_sel = df_co2_final[(df_co2_final.Country == Country_sel) & (df_co2_final.Year == year_sel)]
+    energy_list = df_co2_final['Energy_type'].unique()
+
+    #Aquí se separan los valores para después probarlos
+    df_ver_test = df_co2_final['CO2_emission']
+    #df_co2_final.drop(['CO2_emission'], axis=1, inplace=True)
+
+    #Se muestra el dataset resultante para información del usuario
+    st.write('Dataset seleccionado',user_sel)
+
+    #Se toma una sola fila para modificarla
+    X_new = user_sel.head(1).copy()
+
+    #Donde podemos cambiar los datos
+    #X_new['Country'] = Country_sel
+    X_new['Energy_type'] = st.selectbox(label='Select a Energy type', options=energy_list)
+    X_new['Population'] = st.number_input('Insert a Population number')
+    X_new['Year'] = year_sel
+    X_new['Energy_consumption'] = st.number_input('Insert a Energy Consumption number')
+    X_new['Energy_production'] = st.number_input('Insert a Energy Production number')
+    X_new['GDP'] = st.number_input('Insert a GDP number')
+    X_new['Energy_intensity_per_capita'] = st.number_input('Insert a Energy Intensity per capita number')
+    X_new['Energy_intensity_by_GDP'] = st.number_input('Insert a Energy Intensity by GDP number')
+
+    st.write('Datos seleccionados',X_new)
+    #resultados mostrados
+    predicciones_final = modelo_final.predict(X = X_new)
+    st.write('Value predicted CO2, (millons of tons)',predicciones_final)
+
+elif choose == 'CO2 emissions (approximation)':
+    from get_df_co2aprox import *
+    st.write('# CO2 emissions (approximation)')
+    st.write('''
+            The following prediction, models four indicators: human population, GDP per capita, energy intensity (per unit of GDP), and carbon intensity (emissions per unit of energy consumed) and approximates CO2 emissions by country based on these factors. 
+            Only countries with less than 50% of missing values are presented. 
+            ''')
+    country2 = pd.DataFrame(country1)
+    country2.rename(columns={0:'Country_Code'}, inplace=True)
+    country2 = pd.merge(country2, dim_country, on='Country_Code', how='left')
+    country_name = tuple(country2['Country'].values)
+    years = []
+    for i in range(2023, 2031):
+        years.append(str(i))
+
+    col1_1, col1_2, col1_3 = st.columns([1,1,2])
+    with col1_1:
+        c = st.selectbox('Select country', country_name)
+    with col1_2:
+        y = st.selectbox('Select year', years)
+
+    col2_1, col2_2 = st.columns(2)
+    cn = country2[country2['Country'] == c].index.values[0]
+    c_code = country2.loc[cn, 'Country_Code']
+
+    df_c = df_country(c_code)
+    predict(c_code, 2030)
+    idx = list(pred[pred['pred_co2']<0].index.values)
+    pred.loc[idx, 'pred_co2'] = 0
+
+    col2_1.write('##### Graph prediction(factors of environmental impact)')
+    col2_1.write(plot_pred(df_c, coeficientes))
+    col2_2.write(f'##### Prediction for the year {y}')
+    index = pred[pred['Year'] == int(y)].index.values[0]
+    co2 = pred.loc[index,'pred_co2']
+    col2_2.write(f'CO2 emissions: {round(co2, 2)} millions of tons')
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x = np.arange(1980, 2031), y=df_c['Co2_Emission'], mode='markers', marker=dict(color='#004600'), name='CO2 emission'))
+    fig.add_trace(go.Scatter(x = np.arange(2020, int(y)+1), y=pred['pred_co2'], mode='markers', marker=dict(color='#707070'), name='CO2 prediction'))
+    fig.update_layout(title='CO2 emission',
+    xaxis=dict(title='Year', gridcolor='#E2E2E2', griddash='dash', ticks='outside', tickcolor='#000000'),
+    yaxis=dict(title='CO2 emission(millions of tons)', gridcolor='#E2E2E2',griddash='dash', ticks='outside', tickcolor='#000000'), plot_bgcolor='rgba(0,0,0,0)')
+    col2_2.write(fig)
