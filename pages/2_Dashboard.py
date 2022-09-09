@@ -3,7 +3,7 @@ import streamlit as st
 
 #Title y config pagina
 st.set_page_config(
-    page_title="Consumo de Energía Global y CO2 - Home",
+    page_title="Global Energy consumption and CO2 - Home",
     layout="wide"
 )
 

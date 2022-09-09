@@ -11,12 +11,15 @@ from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn import preprocessing
 from streamlit_option_menu import option_menu
 import streamlit.components as stc
 import base64 
 import time
 import joblib
 from asyncore import write
+import pydeck as pdk
 
 
 @st.experimental_memo(ttl=86400)
@@ -29,7 +32,8 @@ with st.sidebar:
                                   'Predict the CO2 emission using the share percentage of energy production',
                                   'Forecasting consumption and emission',
                                   'CO2 prediction with Neural Network',
-                                  'CO2 emissions (approximation)'])
+                                  'CO2 emissions (approximation)',
+                                  'Predict the emission of a house in a country'])
 
 
 if choose == 'France Vs Germany Nuclear Energy':
@@ -187,14 +191,31 @@ elif choose == 'Countries Clusters by relationship between GDP and CO2 Emission'
         made with K-Means using GDP and CO2 Emission as values to consider and 3 clusters to classify the
         countries. It's also possible to zoom into the plot thanks to plotly.
         
-        For 2019 the models classifies US and China as the only two countries in the high emission category
+        For 2019, for example, the models classifies US and China as the only two countries in the high emission category
         this happens as China doubles the CO2 emission of the US, and the US doubles the amount of CO2
         emmited by India.
-        """)
+        """, unsafe_allow_html=True)
 
 elif choose == 'Predict the CO2 emission using the share percentage of energy production':
     st.header('Predict the CO2 emission of any country using the share percentage of energy production')
     
+    st.markdown("""
+    <div style="text-align: justify;">
+    This section uses a GradientBoostRegression model to predict the future emision of any country in the dataset
+    with available data, using the percentage of participation of each type of fuel in the energy generation
+    process.
+
+    Each country has a different error value as the model was fitted for each country to avoid the introduction
+    of noise. The error, as is in the same scale as the final value, can be interpreted as the positive or negative
+    difference of the value predicted, so for example, if the value predicted is 100 and the error says 50. The
+    result can be interpreted as 100 million tonnes of CO2 emitted +/- 50 million tonnes, which in other words means that
+    the real emission can be 150 or 50 million tonns.
+
+    To use the model, simply input the percentages in each fuel type, 10% = 10. If the sum of the percentages is bigger
+    than 100, the model will show a message asking you to correct the values. If the values are correct, or less than 100, it will show
+    the prediction and the increase (in red) or reduction (in green)
+    </div>
+    """, unsafe_allow_html=True)
 
     query_share = """
         SELECT * FROM main_db.energy_share
@@ -503,75 +524,140 @@ elif choose == 'Forecasting consumption and emission':
 
     download = FileDownloader(df_country.to_csv(),file_ext='csv').download()
 
-elif choose == 'CO2 prediction with Neural Network':
-    st.header('CO2 prediction with Neural Network')
-    
+elif choose == 'CO2 prediction with Neural Network':    
     
     @st.experimental_memo(ttl=86400)
     def request(query):
         return apirequest(query)
 
+    st.title('3d Map / Prediction of Emission CO2')
+
+    st.subheader('The purple bars show, the amount of CO2 emitted between 1980 and 2019 by Country')
+    st.subheader('How to use')
+    st.caption('This is a map in 3d, so you can move it with 2nd mouse button.')
+    st.caption('Mouse wheel, zoom in or zoom out.')
+
     #Se carga el modelo entrenado
-    @st.experimental_memo()
-    def modelo_nn():
-        return joblib.load('./modelo_entrenado.pkl')
-
-    modelo_final = modelo_nn()
+    modelo_final = joblib.load('./modelo_entrenado.pkl')
     #Query desde AWS
-    query =''' select * 
-               from  "main_db.energyco2_origin;'''
+    query =''' SELECT * FROM "db_clean3"."energyco2_origin" 
+    where not country ='World' and not energy_type ='all_energy_types;'''
+    #df_co2_completo = request(query) #me da error 502 (bad gateway)
 
-    #df_co2_completo = request(query)
+    #solucion para la prueba ingestando desde el dataset
+    df_co2_completo = pd.read_csv('./Datasets/energyco2.csv')#Es el dataset original
+    df_countries = pd.read_csv('./Datasets/dim_country.csv')
+    df_energy_clean = pd.read_csv('./Data_cleansing/csv_export_1/energyco2.csv')#es el dataset que limpió Aurora y Ezequiel
+    #trabajando con los datasets
+    df_countries.rename(columns={'Latitude (average)':'latitude','Longitude (average)':'longitude'},inplace=True)
+    df_co2_clean = df_energy_clean.drop(['Energy_Type_Code','Energy_Consumption','Energy_Intensity_Per_Capita','Energy_Intensity_By_Gdp','Year'], axis=1)
+    CO2_Sum = df_co2_clean.groupby(['Country_Code']).sum().reset_index()
+    df_co2_e = pd.DataFrame(CO2_Sum)
+    df_co2_e.rename(columns={df_co2_e.columns[0]:'Country_Code'},inplace=True)
+    countries_geo = df_countries.iloc[:, [2,3]]
+    countries_joined = df_countries.merge(df_co2_e, on='Country_Code').reset_index()
+    countries_joined.dropna(inplace=True)
+    #configuración inicial del mapa
+    midpoint=[np.average(countries_joined["latitude"]),np.average(countries_joined["longitude"])]
+    #st.write("{:.4f}".format(midpoint[0]),midpoint[1])
+    st.pydeck_chart(pdk.Deck(
+        map_style= 'mapbox://styles/mapbox/light-v9',
+        initial_view_state={
+            #"{:.2f}".format(z)
+            'latitude': midpoint[0],
+            'longitude': midpoint[1],
+            'zoom':0,
+            'pitch':30
+            }, 
+            layers=[
+                pdk.Layer(
+                    "ColumnLayer",
+                    data= countries_joined,                
+                    get_position= ["longitude","latitude"],
+                    get_elevation=['Co2_Emission'],
+                    radius=200000,
+                    get_fill_color=[180, 0, 200, 140],
+                    elevation_scale=100,
+                    elevation_range=[0,2000],
+                    pickable= True,
+                    extruded= True,
+                )
+            ]
+    ))
 
-    #try:
-    #    df_co2_completo = request(query) #me da error 502 (bad gateway)
-    #except UnboundLocalError as e:
-        #solucion para la prueba ingestando desde el dataset
-    df_co2_completo = pd.read_csv('./Datasets/energyco2.csv')
 
-    #Se filtran el tipo de energía 'all energy types' y el pais 'world'
+    #st.write(countries_joined)
+    #st.write(df_co2_e)
     mask_AET = df_co2_completo['Energy_type']!='all_energy_types'
     df_co2_AET = df_co2_completo[mask_AET]
     mask_world = df_co2_AET['Country'] != 'World'
-    df_co2_final = df_co2_AET[mask_world].copy()
-
+    df_co2_final = df_co2_AET[mask_world]
+    #df_co2_final = df_co2_completo
+    #st.write(df_co2_final)
     #este feature se puede eliminar, pero yo le agarré cariño para las pruebas
     df_co2_final.rename(columns={"Unnamed: 0": 'Index'},inplace=True)
 
     #aquí year_sel y user_sel vienen de una lista desplegable
     country_list = df_co2_final['Country'].unique()
     #st.write(country_list)
+
+    st.subheader('The simulation shows the amount of CO2 emitted, according to the values entered by the user.')
+    st.subheader('How to use')
+    st.caption('This is a simulation that allows you to see the impact on carbon emissions, according to the use of a certain type of energy, consumption, production, inhabitants, GDP.')
+    st.caption('All features have an effect on the result, but as you will see some have a more significant effect than others.')
     year_list = df_co2_final['Year'].unique()
     year_sel = st.selectbox(label='Select a Year', options=year_list)
+    st.caption('If the table has values in the "CO2_Emission" column, try to change the year, otherwise the emission will be simulated, for that data.')
     Country_sel = st.selectbox(label='Select a Country', options=country_list)
-    user_sel = df_co2_final[(df_co2_final.Country == Country_sel) & (df_co2_final.Year == year_sel)]
+    user_sel = df_co2_final[(df_co2_final.Country == Country_sel) & (df_co2_final.Year == year_sel)].reset_index(drop=True)
     energy_list = df_co2_final['Energy_type'].unique()
 
     #Aquí se separan los valores para después probarlos
-    df_ver_test = df_co2_final['CO2_emission']
-    #df_co2_final.drop(['CO2_emission'], axis=1, inplace=True)
+    user_sel.fillna(0.0,inplace=True)
+    #df_ver_test = user_sel['CO2_emission']
+
 
     #Se muestra el dataset resultante para información del usuario
-    st.write('Dataset seleccionado',user_sel)
+
+    # CSS to inject contained in a string
+    hide_table_row_index = """
+                <style>
+                thead tr th:first-child {display:none}
+                tbody th {display:none}
+                </style>
+                """
+
+    # Inject CSS with Markdown
+    st.markdown(hide_table_row_index, unsafe_allow_html=True)
+    st.caption('If the table is not fully visible, Please check the scroll bar at the bottom of it.')
+    st.table(user_sel[['Energy_type','Energy_consumption','Energy_production','Population','GDP','Energy_intensity_per_capita','Energy_intensity_by_GDP','CO2_emission']])
+    #st.plotly_chart(user_sel)
 
     #Se toma una sola fila para modificarla
-    X_new = user_sel.head(1).copy()
+    X_new = user_sel.head(1)
 
     #Donde podemos cambiar los datos
-    #X_new['Country'] = Country_sel
-    X_new['Energy_type'] = st.selectbox(label='Select a Energy type', options=energy_list)
-    X_new['Population'] = st.number_input('Insert a Population number')
-    X_new['Year'] = year_sel
-    X_new['Energy_consumption'] = st.number_input('Insert a Energy Consumption number')
-    X_new['Energy_production'] = st.number_input('Insert a Energy Production number')
-    X_new['GDP'] = st.number_input('Insert a GDP number')
-    X_new['Energy_intensity_per_capita'] = st.number_input('Insert a Energy Intensity per capita number')
-    X_new['Energy_intensity_by_GDP'] = st.number_input('Insert a Energy Intensity by GDP number')
 
-    st.write('Datos seleccionados',X_new)
-    #resultados mostrados
+    X_new['Energy_type'] = st.selectbox(label='Select a Energy type', options=energy_list)
+    E_type = X_new['Energy_type'][0]
+    index_Energy = user_sel.index[user_sel['Energy_type'] == E_type].values
+    X_new['Year'] = year_sel
+    X_new['Energy_consumption'] = st.number_input('Insert a Energy Consumption number',step=1.00,format='%.5f',value=user_sel.iloc[index_Energy[0],4])
+    X_new['Energy_production'] = st.number_input('Insert a Energy Production number',format='%.5f',value=user_sel.iloc[index_Energy[0],5])
+    X_new['Population'] = st.number_input('Insert a Population number',step=1000.00,value=user_sel.iloc[index_Energy[0],7])
+    X_new['GDP'] = st.number_input('Insert a GDP number',step=20.00,format='%.2f',value=user_sel.iloc[index_Energy[0],6])
+    X_new['Energy_intensity_per_capita'] = st.number_input('Insert a Energy Intensity per capita number',step=1.0,value=user_sel.iloc[index_Energy[0],8])
+    X_new['Energy_intensity_by_GDP'] = st.number_input('Insert a Energy Intensity by GDP number',step=1.0,value=user_sel.iloc[index_Energy[0],9])
+
+    #Uso del modelo entrenado
     predicciones_final = modelo_final.predict(X = X_new)
-    st.write('Value predicted CO2, (millons of tons)',predicciones_final)
+
+    co2_original = user_sel.iloc[index_Energy[0],-1]
+
+    result = float(predicciones_final)- float(co2_original)
+    st.metric(label="Value of Emission of CO2 (millons of Tons) - Predicted", value= np.round(predicciones_final,4),delta=np.round(result,4))
+    st.caption('As you could check. The reduction in energy consumption, the use of clean energy reduces the impact on carbon emissions.')
+    st.caption('This is just an exercise for educational purposes.')
 
 elif choose == 'CO2 emissions (approximation)':
     st.write('# CO2 emissions (approximation)')
@@ -616,3 +702,85 @@ elif choose == 'CO2 emissions (approximation)':
     xaxis=dict(title='Year', gridcolor='#E2E2E2', griddash='dash', ticks='outside', tickcolor='#000000'),
     yaxis=dict(title='CO2 emission(millions of tons)', gridcolor='#E2E2E2',griddash='dash', ticks='outside', tickcolor='#000000'), plot_bgcolor='rgba(0,0,0,0)')
     col2_2.write(fig)
+
+if choose == 'Predict the emission of a house in a country':
+
+    st.header('Predict the emission of a house in a country')
+    st.markdown('''
+    This is a KNN model, in which you put a coordinate in the model and it will returns the CO2 emissions that this 
+    house could produce, this is achieved by taking out the 5 closest power plants to the house and from most 
+    of these, obtains the type of energy to do the previous calculation''')
+    # Se llama a los df
+    plant_info = pd.read_csv(
+        './Data_cleansing/csv_export/plant_info.csv')
+    plant_generation = pd.read_csv(
+        './Data_cleansing/csv_export/plant_generation.csv')
+    dim_fuel = pd.read_csv(
+        './Data_cleansing/csv_export/dim_fuel.csv')
+    energyco2 = pd.read_csv(
+        './Data_cleansing/csv_export/energyco2.csv')
+    country_info = pd.read_csv(
+        './Data_cleansing/csv_export/country_info.csv')
+
+    # Se genera un nuevos df donde se tenga todos los datos necesarios
+    plant_info2 = dim_fuel.join(
+        plant_generation.set_index('Fuel_Code'), on='Fuel_Code')
+    plant_info2 = plant_info2[['Fuel', 'Name']]
+    plant_info2 = plant_info2.join(plant_info.set_index('Name'), on='Name')
+    plant_info2.reset_index(inplace=True, drop=True)
+
+    country_info2 = country_info[country_info.Year == 2019]
+    country_info2.drop(['Year'], axis=1, inplace=True)
+
+    energyco1 = energyco2[energyco2.Year == 2019]
+    energyco1 = energyco1.join(dim_fuel.set_index(
+        'Fuel_Code'), on='Energy_Type_Code')
+    energyco1 = energyco1.join(country_info2.set_index(
+        'Country_Code'), on='Country_Code')
+    energyco1 = energyco1[['Country_Code', 'Fuel', 'Co2_Emission', 'Population']]
+    energyco1.reset_index(inplace=True, drop=True)
+
+    # inputs para ingresar latitud y longitud
+    #lat = float(input('Ingrese latitud'))
+    #lon = float(input('Ingrese longitud'))
+
+    lat = st.number_input('Latitude')
+    lon = st.number_input('Longitude')
+
+    # se hace un knn el cual trae el tipo de energia
+    #lat, lon = 40.657319, -75.646606
+    data = plant_info2[['Latitude', 'Longitude']]
+    plant = plant_info2.Fuel
+
+    es = preprocessing.MinMaxScaler()
+    data = es.fit_transform(data)
+
+    clas = KNeighborsClassifier(n_neighbors=5)
+    clas.fit(data, plant)
+    plantClose = es.transform([[lat, lon]])
+    fuel = clas.predict(plantClose)[0]
+
+    # se hace un knn el cual trae el pais
+    data = plant_info2[['Latitude', 'Longitude']]
+    plant = plant_info2.Name
+
+    data = es.fit_transform(data)
+
+    clas.fit(data, plant)
+
+    plantClose = es.transform([[lat, lon]])
+    country = plant_info2[plant_info2.Name == clas.predict(plantClose)[0]]
+    country = country.Country_Code.values[0]
+
+    # se calcula las emisiones de co2 para esa supuesta casa
+    house_emission = energyco1[(energyco1['Country_Code'] == country) & (
+        energyco1['Fuel'] == fuel)]
+    house_emission = float(
+        (house_emission.Co2_Emission.values/house_emission.Population.values) * 4)
+
+    col111, col222 = st.columns(2)
+
+    with col111:    
+        st.metric('Emisiones CO2 por casa', house_emission)
+    with col222:
+        st.metric('Tipo de energía que provee a la vivienda', fuel)

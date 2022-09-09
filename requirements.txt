@@ -8,3 +8,8 @@ requests
 streamlit==1.12.2
 streamlit-option-menu
 sklearn
+base64
+time
+joblib
+asyncore
+pydeck

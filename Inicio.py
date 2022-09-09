@@ -4,43 +4,25 @@ import streamlit as st
 
 #Title y config pagina
 st.set_page_config(
-    page_title="Consumo de Energía Global y CO2 - Home",
+    page_title="Global Energy consumption and CO2 - Home",
     layout="wide"
 )
 
 
-st.title('Consumo de Energía Global y CO2')
+st.title('Global Energy consumption and CO2')
 
 st.markdown("""
             <div style="text-align: justify;">
-            El cambio climático se ha acelerado a niveles sin precedentes como consecuencia de las actividades humanas, siendo una 
-            de las mayores responsables la necesidad de energía obtenida a partir de diversas fuentes de combustibles fósiles. El 
-            impacto del desarrollo energético en el ambiente y los consumos generados, atraen a las compañías a tomar acción en cómo 
-            intervenir en estas problemáticas. Lo cual lleva a mediciones de consumo y generación para intervenir o mejorar dicha 
-            generación/consumo.
+            Climate change has accelerated to unprecedented levels as a result of human activities, one of the main culprits being the need for energy obtained from various fossil fuel sources. The impact of energy development on the environment and the consumption generated, attract companies to take action on how to intervene in these problems. Which leads to measurements of consumption and generation to intervene or improve said generation/consumption.
 
-            La Agencia de Protección ambiental de los Estados Unidos (EPA) estima que hoy en día casi un 33% de las emisiones de CO₂ 
-            en los Estados Unidos son generadas debido a la producción energética, esto debido al uso de combustibles fósiles para 
-            producir energía. Asimismo, la Agencia Internacional de Energía (IEA) estima que para el 2014 el 49% de las emisiones de 
-            dióxido de carbono emitidas a la atmósfera se produjeron a partir de la quema de combustibles fósiles para la generación 
-            de calefacción y energía.
+            The United States Environmental Protection Agency (EPA) estimates that today almost 33% of CO₂ emissions in the United States are generated due to energy production, due to the use of fossil fuels to produce energy. Likewise, the International Energy Agency (IEA) estimates that by 2014, 49% of the carbon dioxide emissions emitted into the atmosphere were produced from the burning of fossil fuels for heating and power generation.
 
-            Al día de hoy se estima que la concentración de CO₂ en la atmósfera es de 414.37 ppm, esto hace que sea más necesario 
-            aplicar estrategias de reducción de emisiones. En el caso de la producción energética se ha propuesto realizar una 
-            transición de fuentes de energía fósil hacia fuentes de energía limpia y renovables. Sin embargo, la aplicación y uso de 
-            dichas fuentes de energía también conllevan emisiones de CO₂ antes, durante y después de su aplicación.
+            Today it is estimated that the concentration of CO₂ in the atmosphere is 414.37 ppm, which makes it more necessary to apply emission reduction strategies. In the case of energy production, it has been proposed to make a transition from fossil energy sources to clean and renewable energy sources. However, the application and use of these energy sources also lead to CO₂ emissions before, during and after their application.
 
-            Adicionalmente, se han realizado tratados con el fin de disminuir la concentración de CO₂ en la atmósfera. El Protocolo 
-            de Kioto, firmado el 11 de diciembre de 1997 y vigente desde el 16 de febrero de 2005 tiene como objetivo reducir las 
-            emisiones de seis gases de efecto invernadero en un 5% para el periodo 2008-2012 en comparación con 1990, ampliando el 
-            periodo hasta el 2020. Por su lado el acuerdo de París, firmado el 22 de abril de 2016 y en vigencia desde el 4 de 
-            noviembre de 2016 tiene como objetivo mantener el aumento de la temperatura global promedio por debajo de los 2 °C 
-            comparando con los valores preindustriales y realizar esfuerzos para limitar el aumento a 1,5 °C mediante la reducción 
-            de emisiones de gases de efecto invernadero.
+            Additionally, treatments have been carried out in order to reduce the concentration of CO₂ in the atmosphere. The Kyoto Protocol, signed on December 11, 1997 and in force since February 16, 2005, aims to reduce emissions of six greenhouse gases by 5% for the period 2008-2012 compared to 1990, expanding the period until 2020. For its part, the Paris Agreement, signed on April 22, 2016 and in force since November 4, 2016, aims to keep the increase in average global temperature below 2 °C compared to pre-industrial values ​​and make efforts to limit the increase to 1.5 °C by reducing greenhouse gas emissions.
 
-            Con este análisis se quiere Evaluar la cantidad de emisiones de dióxido de carbono a lo largo de la serie de tiempo, 
-            valorando los impactos de los acuerdos de Kioto y París después de su implementación. Así como la oportunidad económica 
-            gracias a la implementación de bonos de carbono.
+            With this analysis we want to evaluate the amount of carbon dioxide emissions throughout the time series, assessing the impacts of the Kyoto and Paris agreements after their implementation. As well as the economic opportunity thanks to the implementation of carbon credits
+
 
             </div>
             """, unsafe_allow_html=True)
