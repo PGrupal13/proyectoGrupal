@@ -729,10 +729,12 @@ if choose == 'Predict the emission of a house in a country':
     country_info = pd.read_csv(
         './Data_cleansing/csv_export/country_info.csv')
     
-    st.title("Test")
-    countrylist = plant_info['Country_Code'].unique()
+    st.title("The House")
+    countrylist = dim_country['Country'].unique()
     option = st.selectbox('Choose a country to see power plants',options=countrylist,index=0)
-    plant1 = plant_info[plant_info['Country_Code']==option]
+    countrycode = dim_country[dim_country['Country']==option]
+    st.write(countrycode)
+    plant1 = plant_info[plant_info['Country_Code']== countrycode.iloc[0,1]]
     m = folium.Map((15.284185,129.37500), tiles="Stamen Terrain", zoom_start=1)
     #folium.Marker([46.8354, -121.7325], popup="Camp Muir").add_to(m)
     #for i in plant_info.index: 
@@ -802,14 +804,17 @@ if choose == 'Predict the emission of a house in a country':
     country = country.Country_Code.values[0]
 
     # se calcula las emisiones de co2 para esa supuesta casa
-    house_emission = energyco1[(energyco1['Country_Code'] == country) & (
-        energyco1['Fuel'] == fuel)]
-    house_emission = float(
+    house_emission1 = energyco1[(energyco1['Country_Code'] == country) & (energyco1['Fuel'] == fuel)]
+    house_emission = house_emission1[:1]
+    #st.dataframe(house_emission)
+    #st.write(house_emission.Population.values)
+
+    house_emission_num = float(
         (house_emission.Co2_Emission.values/house_emission.Population.values) * 4)
 
     col111, col222 = st.columns(2)
 
     with col111:    
-        st.metric('Emisiones CO2 por casa', house_emission)
+        st.metric('Emisiones CO2 por casa', house_emission_num*1000)
     with col222:
         st.metric('Tipo de energía que provee a la vivienda', fuel)
