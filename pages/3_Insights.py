@@ -733,7 +733,7 @@ if choose == 'Predict the emission of a house in a country':
     countrylist = dim_country['Country'].unique()
     option = st.selectbox('Choose a country to see power plants',options=countrylist,index=0)
     countrycode = dim_country[dim_country['Country']==option]
-    st.write(countrycode)
+    #st.write(countrycode)
     plant1 = plant_info[plant_info['Country_Code']== countrycode.iloc[0,1]]
     m = folium.Map((15.284185,129.37500), tiles="Stamen Terrain", zoom_start=1)
     #folium.Marker([46.8354, -121.7325], popup="Camp Muir").add_to(m)
@@ -771,12 +771,21 @@ if choose == 'Predict the emission of a house in a country':
     #lat = float(input('Ingrese latitud'))
     #lon = float(input('Ingrese longitud'))
     #map['last_clicked']['lat']
-    latitude1 = map['last_clicked']['lat']
-    longitude1 = map['last_clicked']['lng']
-    st.write(latitude1)
-    st.write(longitude1)
-    lat = st.number_input('Latitude',value=latitude1)
-    lon = st.number_input('Longitude', value=longitude1)
+    #latitude1 = map['last_clicked']['lat']
+    #longitude1 = map['last_clicked']['lng']
+    #st.write(latitude1)
+    #st.write(longitude1)
+    try:
+        latitude1 = map['last_clicked']['lat']
+        longitude1 = map['last_clicked']['lng']
+        lat = st.number_input('Latitude',value=latitude1)
+        lon = st.number_input('Longitude', value=longitude1)
+    except:
+        st.write('***Please click on Map***')
+        lat= 0
+        lon=0
+    
+
 
     # se hace un knn el cual trae el tipo de energia
     #lat, lon = 40.657319, -75.646606
@@ -815,6 +824,6 @@ if choose == 'Predict the emission of a house in a country':
     col111, col222 = st.columns(2)
 
     with col111:    
-        st.metric('Emisiones CO2 por casa', house_emission_num*1000)
+        st.metric('Emisiones CO2 por casa', house_emission_num*1000000)
     with col222:
         st.metric('Tipo de energía que provee a la vivienda', fuel)
