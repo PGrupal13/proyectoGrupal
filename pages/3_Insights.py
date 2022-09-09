@@ -716,14 +716,7 @@ if choose == 'Predict the emission of a house in a country':
     #m = folium.Map(location=[46.1991, -122.1889], tiles="Stamen Terrain", zoom_start=13)
     #m.add_child(folium.LatLngPopup())
     #m
-    st.title("Test")
-    m = folium.Map([0.7031, -26.0156], tiles="stamentoner", zoom_start=2)
-    folium.Marker([46.8354, -121.7325], popup="Camp Muir").add_to(m)
-    m.add_child(folium.ClickForMarker(popup="Waypoint"))
-    #m.save("map test.html", close_file=True)
-    #st.markdown(m._repr_html_(), unsafe_allow_html=True)
-    st_folium(m, width = 700, height=500)
-
+ 
     # Se llama a los df
     plant_info = pd.read_csv(
         './Data_cleansing/csv_export/plant_info.csv')
@@ -735,6 +728,23 @@ if choose == 'Predict the emission of a house in a country':
         './Data_cleansing/csv_export/energyco2.csv')
     country_info = pd.read_csv(
         './Data_cleansing/csv_export/country_info.csv')
+    
+    st.title("Test")
+    countrylist = plant_info['Country_Code'].unique()
+    option = st.selectbox('Choose a country to see power plants',options=countrylist,index=0)
+    plant1 = plant_info[plant_info['Country_Code']==option]
+    m = folium.Map((15.284185,129.37500), tiles="Stamen Terrain", zoom_start=1)
+    #folium.Marker([46.8354, -121.7325], popup="Camp Muir").add_to(m)
+    #for i in plant_info.index: 
+    #print("Total income in "+ df["Date"][i]+ " is:"+str(df["Income_1"][i]+df["Income_2"][i]))
+    #    folium.Marker([plant_info['Latitude'][i], plant_info['Longitude'][i]], popup=plant_info['Name'][i]).add_to(m)
+    plant1.apply(lambda row:folium.CircleMarker(location=[row['Latitude'], row['Longitude']], 
+                                              radius=1, popup=row['Name'])
+                                             .add_to(m), axis=1)
+    m.add_child(folium.ClickForMarker(popup="Markdown"))
+    #m.save("map test.html", close_file=True)
+    #st.markdown(m._repr_html_(), unsafe_allow_html=True)
+    map = st_folium(m, width = 1000, height=500)
 
     # Se genera un nuevos df donde se tenga todos los datos necesarios
     
@@ -758,9 +768,13 @@ if choose == 'Predict the emission of a house in a country':
     # inputs para ingresar latitud y longitud
     #lat = float(input('Ingrese latitud'))
     #lon = float(input('Ingrese longitud'))
-
-    lat = st.number_input('Latitude')
-    lon = st.number_input('Longitude')
+    #map['last_clicked']['lat']
+    latitude1 = map['last_clicked']['lat']
+    longitude1 = map['last_clicked']['lng']
+    st.write(latitude1)
+    st.write(longitude1)
+    lat = st.number_input('Latitude',value=latitude1)
+    lon = st.number_input('Longitude', value=longitude1)
 
     # se hace un knn el cual trae el tipo de energia
     #lat, lon = 40.657319, -75.646606
