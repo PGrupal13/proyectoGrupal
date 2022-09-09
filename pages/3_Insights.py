@@ -536,7 +536,7 @@ elif choose == 'CO2 prediction with Neural Network':
 
     st.subheader('The purple bars show, the amount of CO2 emitted between 1980 and 2019 by Country')
     st.subheader('How to use')
-    st.caption('This is a map in 3d, so you can move it with 2nd mouse button.')
+    st.caption('This is a map in 3d, so you can move it with 2nd mouse button, or ctrl+ 1st mouse button.')
     st.caption('Mouse wheel, zoom in or zoom out.')
 
     #Se carga el modelo entrenado
