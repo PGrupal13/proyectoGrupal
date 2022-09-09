@@ -10,3 +10,5 @@ streamlit-option-menu
 sklearn
 joblib
 pydeck==0.7.1
+folium
+streamlit-folium
