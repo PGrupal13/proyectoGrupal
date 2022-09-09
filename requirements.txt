@@ -9,4 +9,4 @@ streamlit==1.12.2
 streamlit-option-menu
 sklearn
 joblib
-pydeck
+pydeck==0.7.1
