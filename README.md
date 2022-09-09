@@ -9,7 +9,7 @@
 - [Energy consumption](https://drive.google.com/drive/folders/1nAoLHcmrtoDcDtgUT3UDzFPZZxKh8_1s)     
 
 ##### Visualización
-Se implemento un dashboard que captura las métricas más importantes para el análisis usando Power BI. El acceso al mismo se proporciona a través de la plataforma de Streamlit usando el siguiente enlace: [Dashboard](https://pgrupal13-proyectogrupal-inicio-3klytr.streamlitapp.com/)
+Se implemento un dashboard que captura las métricas más importantes para el análisis usando Power BI. El acceso al mismo se proporciona a través de la plataforma de Streamlit usando el siguiente enlace: [StreamLit-App](https://pgrupal13-proyectogrupal-inicio-3klytr.streamlitapp.com/)
 
 ##### Aprendizaje automático
 Las propuestas presentadas se enfocan en la predicción de las emisiones de CO2: usando diferentes enfoques. 
