@@ -549,7 +549,7 @@ elif choose == 'CO2 prediction with Neural Network':
     df_countries = pd.read_csv('./Datasets/dim_country.csv')
     df_energy_clean = pd.read_csv('./Data_cleansing/csv_export_1/energyco2.csv')#es el dataset que limpió Aurora y Ezequiel
     #trabajando con los datasets
-    df_countries.rename(columns={'Latitude (average)':'latitude','Longitude (average)':'longitude'},inplace=True)
+    df_countries.rename(columns={'Latitude(average)':'latitude','Longitude(average)':'longitude'},inplace=True)
     df_co2_clean = df_energy_clean.drop(['Energy_Type_Code','Energy_Consumption','Energy_Intensity_Per_Capita','Energy_Intensity_By_Gdp','Year'], axis=1)
     CO2_Sum = df_co2_clean.groupby(['Country_Code']).sum().reset_index()
     df_co2_e = pd.DataFrame(CO2_Sum)
