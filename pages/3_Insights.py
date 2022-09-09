@@ -717,7 +717,9 @@ if choose == 'Predict the emission of a house in a country':
     #m.add_child(folium.LatLngPopup())
     #m
     st.title("Test")
-    m = folium.Map([38.8934, -76.9470], tiles="stamentoner", zoom_start=12)
+    m = folium.Map([0.7031, -26.0156], tiles="stamentoner", zoom_start=2)
+    folium.Marker([46.8354, -121.7325], popup="Camp Muir").add_to(m)
+    m.add_child(folium.ClickForMarker(popup="Waypoint"))
     #m.save("map test.html", close_file=True)
     #st.markdown(m._repr_html_(), unsafe_allow_html=True)
     st_folium(m, width = 700, height=500)
