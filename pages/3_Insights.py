@@ -20,6 +20,8 @@ import time
 import joblib
 from asyncore import write
 import pydeck as pdk
+import folium
+from streamlit_folium import st_folium
 
 
 @st.experimental_memo(ttl=86400)
@@ -710,6 +712,16 @@ if choose == 'Predict the emission of a house in a country':
     This is a KNN model, in which you put a coordinate in the model and it will returns the CO2 emissions that this 
     house could produce, this is achieved by taking out the 5 closest power plants to the house and from most 
     of these, obtains the type of energy to do the previous calculation''')
+    
+    #m = folium.Map(location=[46.1991, -122.1889], tiles="Stamen Terrain", zoom_start=13)
+    #m.add_child(folium.LatLngPopup())
+    #m
+    st.title("Test")
+    m = folium.Map([38.8934, -76.9470], tiles="stamentoner", zoom_start=12)
+    #m.save("map test.html", close_file=True)
+    #st.markdown(m._repr_html_(), unsafe_allow_html=True)
+    st_folium(m, width = 700, height=500)
+
     # Se llama a los df
     plant_info = pd.read_csv(
         './Data_cleansing/csv_export/plant_info.csv')
@@ -723,6 +735,7 @@ if choose == 'Predict the emission of a house in a country':
         './Data_cleansing/csv_export/country_info.csv')
 
     # Se genera un nuevos df donde se tenga todos los datos necesarios
+    
     plant_info2 = dim_fuel.join(
         plant_generation.set_index('Fuel_Code'), on='Fuel_Code')
     plant_info2 = plant_info2[['Fuel', 'Name']]
