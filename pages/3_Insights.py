@@ -657,7 +657,7 @@ elif choose == 'CO2 prediction with Neural Network':
     co2_original = user_sel.iloc[index_Energy[0],-1]
 
     result = float(predicciones_final)- float(co2_original)
-    st.metric(label="Value of Emission of CO2 (millons of Tons) - Predicted", value= np.round(predicciones_final,4),delta=np.round(result,4))
+    st.metric(label="Value of Emission of CO2 (millons of Tons) - Predicted", value= np.round(predicciones_final,4),delta=np.round(result,4),delta_color='inverse')
     st.caption('As you could check. The reduction in energy consumption, the use of clean energy reduces the impact on carbon emissions.')
     st.caption('This is just an exercise for educational purposes.')
 
