@@ -9,7 +9,7 @@
 - [Energy consumption](https://drive.google.com/drive/folders/1nAoLHcmrtoDcDtgUT3UDzFPZZxKh8_1s)     
 
 ##### Visualización
-Se implemento un dashboard que captura las métricas más importantes para el análisis usando Power BI. El acceso al mismo se proporciona a través de la plataforma de Streamlit usando el siguiente enlace: [Dashboard](https://pgrupal13-proyectogrupal-inicio-jwhynw.streamlitapp.com/)
+Se implemento un dashboard que captura las métricas más importantes para el análisis usando Power BI. El acceso al mismo se proporciona a través de la plataforma de Streamlit usando el siguiente enlace: [Dashboard](https://pgrupal13-proyectogrupal-inicio-3klytr.streamlitapp.com/)
 
 ##### Aprendizaje automático
 Las propuestas presentadas se enfocan en la predicción de las emisiones de CO2: usando diferentes enfoques. 
@@ -18,8 +18,7 @@ Las propuestas presentadas se enfocan en la predicción de las emisiones de CO2:
 - El conjunto de datos basico ha sido almacenado en AWS: S3.   
 - El acceso a los datos con sus respectivas modificaciones se lleva acabo desde AWS: Athena.
 - La automatización se llevo a cabo usando la librería BOTO3 de python, la cuál permite conectar Python con los servicios antes mencionados.       
-![Pipeline utilizado](https://i.ibb.co/ts8NgTs/pipeline.png)
-
+![Pipeline](https://i.ibb.co/c8hXvJw/pipeline.jpg)
 
 ##### Alteraciones a los datos 
 - Se omitieron datos de regiones; conservando solo los datos reportados para países y algunos de sus territorios más detacados.     
