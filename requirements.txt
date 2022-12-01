@@ -4,10 +4,10 @@ matplotlib
 seaborn
 plotly
 sodapy
+sklearn
 requests
 streamlit==1.15.1
 streamlit-option-menu
-sklearn
 joblib
 pydeck==0.7.1
 folium
