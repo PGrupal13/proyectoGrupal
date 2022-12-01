@@ -8,6 +8,7 @@ requests
 streamlit==1.12.2
 streamlit-option-menu
 sklearn
+sklearn.cluster
 joblib
 pydeck==0.7.1
 folium
