@@ -4,7 +4,7 @@ matplotlib
 seaborn
 plotly
 sodapy
-sklearn
+scikit-learn
 requests
 streamlit==1.15.1
 streamlit-option-menu
