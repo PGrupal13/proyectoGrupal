@@ -10,6 +10,6 @@ st.set_page_config(
 st.title("Dashboard")
 @st.experimental_memo
 def load_dashboard():
-    return 'https://app.powerbi.com/reportEmbed?reportId=16803e42-658f-48ac-bd2b-e2f1c8bd36a9&autoAuth=true&ctid=458a0ded-ee7b-47cc-8185-2f3d6065b450'
+    return 'https://app.powerbi.com/view?r=eyJrIjoiZDI2MTlhNDctN2M2OS00OTk3LWJiZDEtNjg4OWM3YjRiMDZmIiwidCI6IjQ1OGEwZGVkLWVlN2ItNDdjYy04MTg1LTJmM2Q2MDY1YjQ1MCJ9&pageName=ReportSection'
 
 st.components.v1.iframe(load_dashboard(), height=700)
